@@ -40,4 +40,60 @@ public class ScopeMappingTest extends KeycloakIntegrationTest {
         List<String> scopes = scopeClaim.asList(String.class);
         assertTrue(scopes.contains("s2s"));
     }
+
+    @Test
+    public void testGetAccessTokenForUser() throws Exception {
+        ValidatableResponse tokenResponse = given()
+                .param("client_id", "testclient")
+                .param("client_secret", "testclient")
+                .param("username", "testuser")
+                .param("password", "password123")
+                .param("grant_type", "password")
+            .when()
+                .post(getTokenUrl(REALM))
+            .then()
+                .log().all()
+                .statusCode(HttpStatus.SC_OK)
+                .body("access_token", notNullValue())
+                .body("token_type", equalTo("Bearer"));
+
+        String accessToken = tokenResponse.extract().path("access_token");
+        DecodedJWT jwt = JWT.decode(accessToken);
+
+        // Verify token contains expected claims
+        assertNotNull(jwt.getSubject());
+        assertNotNull(jwt.getToken());
+    }
+
+    @Test
+    public void testGetAccessTokenForUserAndFetchUserInfo() throws Exception {
+        // Step 1: Get access token for user
+        ValidatableResponse tokenResponse = given()
+                .param("client_id", "testclient")
+                .param("client_secret", "testclient")
+                .param("username", "testuser")
+                .param("password", "password123")
+                .param("grant_type", "password")
+            .when()
+                .post(getTokenUrl(REALM))
+            .then()
+                .log().all()
+                .statusCode(HttpStatus.SC_OK)
+                .body("access_token", notNullValue())
+                .body("token_type", equalTo("Bearer"));
+
+        String accessToken = tokenResponse.extract().path("access_token");
+
+        // Step 2: Use access token to fetch user info
+        String userInfoUrl = getRealmUrl(REALM) + "protocol/openid-connect/userinfo";
+        given()
+                .auth().oauth2(accessToken)
+            .when()
+                .get(userInfoUrl)
+            .then()
+                .log().all()
+                .statusCode(HttpStatus.SC_OK)
+                .body("sub", notNullValue())
+                .body("preferred_username", equalTo("testuser"));
+}
 }

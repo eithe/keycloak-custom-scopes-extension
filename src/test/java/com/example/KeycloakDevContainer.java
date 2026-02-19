@@ -13,7 +13,7 @@ public class KeycloakDevContainer extends KeycloakContainer {
     /**
      * Keycloak Docker image to use.
      */
-    private static final String DEFAULT_IMAGE = "quay.io/keycloak/keycloak:22.0";
+    private static final String DEFAULT_IMAGE = "quay.io/keycloak/keycloak:23.0.7";
 
     public KeycloakDevContainer() {
         super(DEFAULT_IMAGE);

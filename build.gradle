@@ -5,11 +5,11 @@ plugins {
 group = 'com.example'
 version = '1.0'
 
-def keycloakVersion = '22.0.0'
+def keycloakVersion = '23.0.7'
 def restAssuredVersion = '5.3.0'
 // Check testcontainers Keycloak version compatibility here:
 // https://github.com/dasniko/testcontainers-keycloak/blob/main/versions.md
-def testContainersKeycloakVersion = '2.2.2'
+def testContainersKeycloakVersion = '3.2.0'
 
 repositories {
     maven {
@@ -42,6 +42,8 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    environment 'DOCKER_HOST', 'unix:///Users/eirik.hodne/.colima/default/docker.sock'
+    environment 'TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE', '/var/run/docker.sock'
 }
 
 sourceSets {

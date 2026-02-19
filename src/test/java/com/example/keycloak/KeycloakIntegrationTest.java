@@ -24,7 +24,7 @@ public abstract class KeycloakIntegrationTest {
     }
 
     protected String getAuthServerUrl() {
-        return sKeycloakContainer.getAuthServerUrl();
+        return sKeycloakContainer.getAuthServerUrl() + "/";
     }
 
     protected String getRealmUrl(String realm) {
